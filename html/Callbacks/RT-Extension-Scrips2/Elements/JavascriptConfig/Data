@@ -1,9 +1,18 @@
 <%init>
+  my @ticket_functions = Class::Inspector->methods( 'RT::Ticket', 'public' );
+  @ticket_functions = (@ticket_functions, Class::Inspector->functions( 'RT::Ticket' ));
+
   $Config->{"AceEditorOptions"} = RT->Config->Get("AceEditorOptions") || {
     enableBasicAutocompletion => 1,
     enableSnippets => 1,
     enableLiveAutocompletion => 1
   };
+
+  my @ticket_functions_hashes = map +{
+    value => $_
+  }, @{$ticket_functions[0]};
+
+  $Config->{"TicketFunction"} = \@ticket_functions_hashes;
 </%init>
 
 <%args>
