@@ -8,6 +8,7 @@ our $VERSION = '0.01';
 RT->AddStyleSheets( "rt-extension-scrips2.css" );
 
 RT->AddJavaScript(
+    "rt-extension-scrips2.js",
     "ace.js",
     "ext-language_tools.js",
     "theme-chrome.js",

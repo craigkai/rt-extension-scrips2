@@ -23,61 +23,12 @@
 
 </&>
 
-<script>
-  // Hook up ACE editor to all textareas with data-editor attribute
-  jQuery(function () {
-      jQuery('textarea[data-editor]').each(function () {
-          var textarea = jQuery(this);
-
-          var mode = textarea.data('editor');
-
-          var editDiv = jQuery('<div>', {
-              position: 'absolute',
-              width: textarea.width(),
-              height: textarea.height(),
-              'class': textarea.attr('class')
-          })
-          // .css('background-color', textarea.attr('background-color'))
-          .insertBefore(textarea);
-
-          textarea.css('display', 'none');
-
-          var editor = ace.edit(editDiv[0]);
-
-          editor.setOptions(<% JSON( $editor_options ) | n %>);
-
-          editor.setTheme("ace/theme/<% $theme %>");
-          editor.getSession().setValue(textarea.val());
-          editor.getSession().setMode("ace/mode/" + mode);
-          
-          // copy back to textarea on form submit...
-          editor.getSession().on('change', function(){
-            textarea.val(editor.getSession().getValue());
-          });
-
-      });
-  });
-</script>
-
 <%INIT>
 my @list = (
     CustomIsApplicableCode => loc('Custom condition'),
     CustomPrepareCode      => loc('Custom action preparation code'),
     CustomCommitCode       => loc('Custom action commit code'),
 );
-
-my $style = $session{'CurrentUser'}
-          ? $session{'CurrentUser'}->Stylesheet
-          : RT->Config->Get('WebDefaultStylesheet');
-
-my $theme = $style eq 'elevator-light' ? "solarized_light" : "chrome";
-
-my $editor_options = RT->Config->Get('AceEditorOptions') ||
-  {
-    enableBasicAutocompletion => "true",
-    enableSnippets => "true",
-    enableLiveAutocompletion => "true"
-  };
 </%INIT>
 
 

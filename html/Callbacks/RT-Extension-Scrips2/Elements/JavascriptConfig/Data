@@ -1,0 +1,13 @@
+<%init>
+  $Config->{"AceEditorOptions"} = RT->Config->Get("AceEditorOptions") || {
+    enableBasicAutocompletion => 1,
+    enableSnippets => 1,
+    enableLiveAutocompletion => 1
+  };
+</%init>
+
+<%args>
+  $CurrentUser
+  $Config
+  $Catalog
+</%args>

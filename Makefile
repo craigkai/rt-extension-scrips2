@@ -837,5 +837,5 @@ config ::
 # Postamble by Module::Install 1.19
 install ::
 	$(NOECHO) $(PERL) -Ilib -I"/home/knation/bps/rts/rt/local/lib" -I"/home/knation/bps/rts/rt/lib" -Iinc -MModule::Install::RTx::Runtime -e"RTxPlugin()"
-	$(NOECHO) $(PERL) -MExtUtils::Install -e "install({q(html), q($(DESTDIR)/home/knation/bps/rts/rt/local/plugins/RT-Extension-Scrips2/html), q(lib), q($(DESTDIR)/home/knation/bps/rts/rt/local/plugins/RT-Extension-Scrips2/lib), q(static), q($(DESTDIR)/home/knation/bps/rts/rt/local/plugins/RT-Extension-Scrips2/static)})"
+	$(NOECHO) $(PERL) -MExtUtils::Install -e "install({q(etc), q($(DESTDIR)/home/knation/bps/rts/rt/local/plugins/RT-Extension-Scrips2/etc), q(html), q($(DESTDIR)/home/knation/bps/rts/rt/local/plugins/RT-Extension-Scrips2/html), q(lib), q($(DESTDIR)/home/knation/bps/rts/rt/local/plugins/RT-Extension-Scrips2/lib), q(static), q($(DESTDIR)/home/knation/bps/rts/rt/local/plugins/RT-Extension-Scrips2/static)})"
 
