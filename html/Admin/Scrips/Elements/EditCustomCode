@@ -1,0 +1,79 @@
+<&| /Widgets/TitleBox, title => loc('User Defined conditions and results') &>
+
+<div class="form-row">
+  <div class="col-12 comment">
+    <i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
+  </div>
+</div>
+
+% while ( my ($method, $desc) = splice @list, 0, 2 ) {
+<div class="form-row">
+  <div class="label col-2 labeltop">
+    <% $desc %>:
+  </div>
+  <div class="value col-9">
+% my $code = $ARGS{ $method } || $Scrip->$method() || '';
+% my $lines = @{[ $code =~ /\n/gs ]} + 3;
+      <textarea class="ace-editor form-control" rows="<% $lines %>" name="<% $method %>"
+        data-editor="perl"
+      ><% $code %></textarea>
+  </div>
+</div>
+% }
+
+</&>
+
+<script>
+  // Hook up ACE editor to all textareas with data-editor attribute
+  jQuery(function () {
+      jQuery('textarea[data-editor]').each(function () {
+          var textarea = jQuery(this);
+
+          var mode = textarea.data('editor');
+
+          var editDiv = jQuery('<div>', {
+              position: 'absolute',
+              width: textarea.width(),
+              height: textarea.height(),
+              'class': textarea.attr('class')
+          })
+          // .css('background-color', textarea.attr('background-color'))
+          .insertBefore(textarea);
+
+          textarea.css('display', 'none');
+
+          var editor = ace.edit(editDiv[0]);
+          editor.setOptions({
+              enableBasicAutocompletion: true
+          });
+          editor.setTheme("ace/theme/<% $theme %>");
+          editor.getSession().setValue(textarea.val());
+          editor.getSession().setMode("ace/mode/" + mode);
+          
+          // copy back to textarea on form submit...
+          editor.getSession().on('change', function(){
+            textarea.val(editor.getSession().getValue());
+          });
+
+      });
+  });
+</script>
+
+<%INIT>
+my @list = (
+    CustomIsApplicableCode => loc('Custom condition'),
+    CustomPrepareCode      => loc('Custom action preparation code'),
+    CustomCommitCode       => loc('Custom action commit code'),
+);
+
+my $style = $session{'CurrentUser'}
+          ? $session{'CurrentUser'}->Stylesheet
+          : RT->Config->Get('WebDefaultStylesheet');
+
+my $theme = $style eq 'elevator-light' ? "solarized_light" : "chrome";
+</%INIT>
+
+
+<%ARGS>
+$Scrip
+</%ARGS>
