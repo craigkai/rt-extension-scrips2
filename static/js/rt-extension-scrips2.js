@@ -1,11 +1,14 @@
 const ticket_obj_re = /\$self->TicketObj->.*[^\(\)\->]/;
+const transaction_obj_re = /\$self->TransactionObj->.*[^\(\)\->]/;
 
 var customACECompleter = {
   getCompletions: function (editor, session, pos, prefix, callback) {
     current_line = session.getValue();
 
     if (ticket_obj_re.test(current_line)) {
-      callback(null, RT.Config.TicketFunction);
+      callback(null, RT.Config.TicketFunctions);
+    } else if (transaction_obj_re.test(current_line)) {
+      callback(null, RT.Config.TransactionFunctions);
     }
   },
 };

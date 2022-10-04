@@ -1,18 +1,27 @@
 <%init>
-  my @ticket_functions = Class::Inspector->methods( 'RT::Ticket', 'public' );
-  @ticket_functions = (@ticket_functions, Class::Inspector->functions( 'RT::Ticket' ));
-
   $Config->{"AceEditorOptions"} = RT->Config->Get("AceEditorOptions") || {
     enableBasicAutocompletion => 1,
     enableSnippets => 1,
     enableLiveAutocompletion => 1
   };
 
+  my $ticket_functions = Class::Inspector->methods( 'RT::Ticket', 'public' );
+  my $ticket_methods = Class::Inspector->functions( 'RT::Ticket');
+
   my @ticket_functions_hashes = map +{
     value => $_
-  }, @{$ticket_functions[0]};
+  }, (@{$ticket_functions}, @{$ticket_methods});
 
-  $Config->{"TicketFunction"} = \@ticket_functions_hashes;
+  $Config->{"TicketFunctions"} = \@ticket_functions_hashes;
+
+  my $transaction_methods = Class::Inspector->methods( 'RT::Transaction', 'public' );
+  my $transaction_functions = Class::Inspector->functions( 'RT::Transaction' );
+
+  my @transaction_functions_hashes = map +{
+    value => $_
+  }, (@{$transaction_functions}, @{$transaction_methods});
+
+  $Config->{"TransactionFunctions"} = \@transaction_functions_hashes;
 </%init>
 
 <%args>
