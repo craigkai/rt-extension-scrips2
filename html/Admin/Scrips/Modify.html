@@ -1,0 +1,199 @@
+<& /Admin/Elements/Header, Title => loc("Modify scrip #[_1]", $id) &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip" class="mx-auto max-width-xl">
+  <input type="hidden" class="hidden" name="id" value="<% $id %>" />
+  <input type="hidden" class="hidden" name="From" value="<% $From || q{} %>" />
+
+  <div class="card m-4">
+    <h5 class="card-header">Condition</h5>
+    <div class="card-body">
+      <h5 class="card-title">When this happens, do something</h5>
+      <&| /Elements/LabeledValue, Label => loc('Condition') &>
+        <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $scrip->ConditionObj->Id, &>
+      </&>
+
+% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
+% my $show = $scrip->ActionObj->Name eq "User Defined" ? "" : qq[style="display: none;"];
+      <div class="m-2 form-row" id="custom-condition-code-container" <% $show %>>
+        <div class="col-3"></div>
+        <div class="value col-9">
+% my $code = $ARGS{ "CustomIsApplicableCode" } || $scrip->CustomIsApplicableCode() || '';
+% my $lines = @{[ $code =~ /\n/gs ]} + 3;
+            <textarea class="ace-editor form-control" rows="<% $lines %>" name="CustomIsApplicableCode"
+              data-editor="perl"
+            ><% $code %></textarea>
+        </div>
+      </div>
+% }
+    </div>
+  </div>
+
+  <div class="wrapper m-4">
+    <div class="arrow">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.0001 3.67157L13.0001 3.67157L13.0001 16.4999L16.2426 13.2574L17.6568 14.6716L12 20.3284L6.34314 14.6716L7.75735 13.2574L11.0001 16.5001L11.0001 3.67157Z"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
+  </div>
+
+  <div class="card m-4">
+    <h5 class="card-header">Action</h5>
+    <div class="card-body">
+      <h5 class="card-title">Do this</h5>
+
+      <&| /Elements/LabeledValue, Label => loc('Action') &>
+        <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $scrip->ActionObj->Id, &>
+      </&>
+
+% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
+% my $show = $scrip->ActionObj->Name eq "User Defined" ? "" : qq[style="display: none;"];
+      <div class="m-2 form-row" id="custom-prep-code-container" <% $show %>>
+        <div class="col-3">Action Prep Code:</div>
+        <div class="value col-9">
+% my $code = $ARGS{ "CustomPrepareCode" } || $scrip->CustomPrepareCode() || '';
+% my $lines = @{[ $code =~ /\n/gs ]} + 3;
+            <textarea class="ace-editor form-control" rows="<% $lines %>" name="CustomPrepareCode"
+              data-editor="perl"
+            ><% $code %></textarea>
+        </div>
+      </div>
+
+      <div class="m-2 form-row <% $show %>" id="custom-commit-code-container">
+        <div class="col-3">Action Commmit Code:</div>
+        <div class="value col-9">
+% $code = $ARGS{ "CustomCommitCode" } || $scrip->CustomCommitCode() || '';
+% $lines = @{[ $code =~ /\n/gs ]} + 3;
+            <textarea class="ace-editor form-control" rows="<% $lines %>" name="CustomCommitCode"
+              data-editor="perl"
+            ><% $code %></textarea>
+        </div>
+      </div>
+% }
+    </div>
+  </div>
+
+  <div class="wrapper m-4">
+    <div class="arrow">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.0001 3.67157L13.0001 3.67157L13.0001 16.4999L16.2426 13.2574L17.6568 14.6716L12 20.3284L6.34314 14.6716L7.75735 13.2574L11.0001 16.5001L11.0001 3.67157Z"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
+  </div>
+
+  <div class="card m-4">
+    <h5 class="card-header">Basics</h5>
+    <div class="card-body">
+
+% if ( not $disabled ) {
+        <div class="form-row">
+          <div class="label col-3">
+            <a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:
+          </div>
+          <div class="value col-9">
+            <span class="current-value form-control">
+% if ( $scrip->IsGlobal ) {
+      <a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
+% } else {
+% my $added_to = $scrip->AddedTo;
+% my $found = 0;
+% while ( my $queue = $added_to->Next ) {
+% $m->out(', ') if $found++;
+      <a href="<% RT->Config->Get('WebPath') %>/Admin/Queues/Scrips.html?id=<% $queue->id %>">\
+      <% $queue->Name %></a>\
+% last if $found == 10;
+% }
+% $m->out(', ...') if $found == 10;
+% }
+            </span>
+          </div>
+        </div>
+% }
+      
+      <input type="hidden" class="hidden" name="SetEnabled" value="1" />
+      
+        <&| /Elements/LabeledValue, Label => '' &>
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="checkbox custom-control-input" name="Enabled" id="Enabled" value="1" <% $EnabledChecked |n%> />
+            <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
+          </div>
+        </&>
+      
+      <&| /Elements/LabeledValue, Label => loc('Template') &>
+        <& Elements/SelectTemplate, Default => $ARGS{"Template"}, Scrip => $scrip &>
+      </&>
+
+      <div class="form-row">
+        <div class="col-12">
+          <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<%ARGS>
+$id     => undef
+$Update => undef
+$From   => undef
+</%ARGS>
+<%INIT>
+my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+$scrip->Load( $id );
+Abort(loc("Couldn't load scrip #[_1]", $id))
+    unless $scrip->id;
+
+my $disabled = $scrip->Disabled;
+
+if ( $Update ) {
+    my @attribs = qw(
+        Description
+        ScripAction ScripCondition
+        CustomPrepareCode CustomCommitCode CustomIsApplicableCode
+    );
+    push @attribs, "Template" if defined $ARGS{Template} and length $ARGS{Template};
+    if ($ARGS{"SetEnabled"}) {
+        push @attribs, "Disabled";
+        $ARGS{"Disabled"} = not $ARGS{"Enabled"};
+    }
+    my @results = UpdateRecordObject(
+        AttributesRef   => \@attribs,
+        Object          => $scrip,
+        ARGSRef         => \%ARGS
+    );
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => {
+            id => $scrip->id,
+            From => $From,
+        },
+    );
+}
+
+my $EnabledChecked = qq[checked="checked"];
+$EnabledChecked = '' if $disabled;
+
+my @results;
+my ($ok, $msg) = $scrip->CompileCheck;
+push @results, $msg if !$ok;
+</%INIT>

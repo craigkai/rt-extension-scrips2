@@ -19,6 +19,33 @@ jQuery(function () {
     window.location.href.indexOf("/Admin/Scrips/Modify") != -1 ||
     window.location.href.indexOf("/Admin/Scrips/Create") != -1
   ) {
+
+    jQuery("select[name='ScripCondition']").on('change', function() {
+      var selected_option_value = jQuery(this).find(":selected").text();
+      let condition_container = jQuery("#custom-condition-code-container");
+
+      if ( selected_option_value == "User Defined\n" ) {
+        condition_container.show();
+      } else {
+        condition_container.hide();
+      }
+    });
+
+    jQuery("select[name='ScripAction']").on('change', function() {
+      var selected_option_value = jQuery(this).find(":selected").text();
+
+      let prep_container = jQuery("#custom-prep-code-container");
+      let commit_container = jQuery("#custom-commit-code-container");
+
+      if ( selected_option_value == "User Defined\n" ) {
+        prep_container.show();
+        commit_container.show();
+      } else {
+        prep_container.hide();
+        commit_container.hide();
+      }
+    });
+
     jQuery("textarea[data-editor]").each(function () {
       var textarea = jQuery(this);
 
