@@ -11,8 +11,9 @@ RT->AddJavaScript(
     "rt-extension-scrips2.js",
     "ace.js",
     "ext-language_tools.js",
-    "theme-chrome.js",
-    "mode-javascript.js"
+    "theme-solarized_light.js",
+    "mode-perl.js",
+    "snippets/perl.js"
 );
 
 =head1 NAME
